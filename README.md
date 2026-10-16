@@ -1,2 +1,31 @@
-# Oil-burn-wizard
-💡 Awareness &amp; energy value: The Oil Burner Wizard helps you accurately determine the capacity required for your heating demand and domestic hot water. Use the results as an indication to explore alternative heat sources — whether gas-based or renewable energy — and gain awareness of the true energy value behind every liter or US gallon of fuel.
+# Oil burn wizard
+
+Progressieve webapplicatie (PWA) — werkt offline en kan geïnstalleerd worden op telefoon, tablet of computer.
+
+## Bestanden
+
+| Bestand | Doel |
+|---|---|
+| `index.html` | De app zelf |
+| `manifest.json` | App-manifest (naam, iconen, kleuren) |
+| `service-worker.js` | Offline caching |
+| `privacy.html` | Privacyverklaring |
+| `handleiding.html` | Gebruikershandleiding |
+| `icon-192.png` | App-icoon 192×192 |
+| `icon-512.png` | App-icoon 512×512 |
+| `icon-maskable-512.png` | Maskable icoon 512×512 |
+| `icon.svg` | Optioneel vectorieel icoon |
+
+## Installeren als app
+
+- **Android (Chrome/Edge):** menu → "App installeren"
+- **iPhone/iPad (Safari):** Deel-icoon → "Zet op beginscherm"
+- **Desktop (Chrome/Edge):** installeer-icoon in de adresbalk
+
+## Offline gebruik
+
+Na de eerste keer laden werkt de app ook zonder internetverbinding.
+
+## Privacy
+
+Zie `privacy.html` voor meer informatie.

@@ -1,0 +1,47 @@
+{
+  "name": "Oil burn wizard",
+  "short_name": "Oil Wizdard",
+  "description": "💡 Awareness & energy value: The Oil Burner Wizard helps you accurately determine the capacity required for your heating demand and domestic hot water. Use the results as an indication to explore alternative heat sources — whether gas-based or renewable energy — and gain awareness of the true energy value behind every liter or US gallon of fuel.",
+  "start_url": "https://groenklimaat.github.io/oil-burn-wizard/",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#0de79f",
+  "lang": "nl",
+  "dir": "ltr",
+  "categories": [
+    "education"
+  ],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "contact": "info@bleumagicwhale.eu"
+}

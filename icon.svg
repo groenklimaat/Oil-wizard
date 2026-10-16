@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#0b2b4a" stroke="#f39c12" stroke-width="4"/>
+  
+  <!-- Large oil drop -->
+  <path d="M100 30 
+           C 100 30, 60 85, 60 120 
+           A 40 40 0 0 0 140 120 
+           C 140 85, 100 30, 100 30 Z" 
+        fill="#f39c12" opacity="0.9"/>
+  
+  <!-- Highlight on the drop -->
+  <ellipse cx="88" cy="105" rx="8" ry="14" fill="#fff" opacity="0.35"/>
+  
+  <!-- Energy lightning bolt inside the drop -->
+  <path d="M105 75 L 88 115 L 100 115 L 92 145 L 115 100 L 102 100 Z" 
+        fill="#0b2b4a" stroke="#0b2b4a" stroke-width="1" stroke-linejoin="round"/>
+  
+  <!-- Awareness / warning ring -->
+  <circle cx="100" cy="100" r="82" fill="none" stroke="#f1c40f" stroke-width="2" stroke-dasharray="6 6" opacity="0.8"/>
+  
+  <!-- Arc text: ENERGY -->
+  <path id="arcTop" d="M 30 100 A 70 70 0 0 1 170 100" fill="none"/>
+  <text font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#f39c12" letter-spacing="2">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">ENERGY &amp; AWARENESS</textPath>
+  </text>
+  
+  <!-- Arc text: CRUDE OIL -->
+  <path id="arcBottom" d="M 30 100 A 70 70 0 0 0 170 100" fill="none"/>
+  <text font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#f39c12" letter-spacing="2">
+    <textPath href="#arcBottom" startOffset="50%" text-anchor="middle">CRUDE OIL · 11.8 kWh/kg</textPath>
+  </text>
+  
+  <!-- Small stars for awareness -->
+  <circle cx="40" cy="50" r="2" fill="#f1c40f"/>
+  <circle cx="160" cy="50" r="2" fill="#f1c40f"/>
+  <circle cx="40" cy="150" r="2" fill="#f1c40f"/>
+  <circle cx="160" cy="150" r="2" fill="#f1c40f"/>
+</svg>
