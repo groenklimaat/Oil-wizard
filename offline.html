@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0de79f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Oil Wizdard">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="./icon-512.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Burner Wizard + PDF Report</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: #e7eef5;
+            margin: 0;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .app {
+            max-width: 1300px;
+            width: 100%;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,20,50,0.15);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            font-weight: 500;
+            color: #0b2b4a;
+            margin-top: 0;
+            margin-bottom: 5px;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            border-left: 8px solid #f39c12;
+            padding-left: 25px;
+        }
+        .sub {
+            color: #3b5f7a;
+            margin-left: 33px;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* ---------- TAB NAVIGATIE ---------- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            margin-left: 33px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: 2px solid #b4c9e0;
+            background: white;
+            color: #1f4a70;
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover {
+            border-color: #f39c12;
+            background: #fef9e7;
+        }
+        .tab-btn.active {
+            background: #f39c12;
+            color: white;
+            border-color: #e08e0b;
+            box-shadow: 0 4px 12px rgba(243,156,18,0.3);
+        }
+        .tab-btn .flag {
+            font-size: 1.2rem;
+        }
+
+        /* ---------- TAB CONTENT ---------- */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #f8fbfe;
+            border-radius: 28px;
+            padding: 22px;
+            border: 1px solid #d6e2ee;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+            transition: 0.1s;
+        }
+        .card:hover {
+            border-color: #f1c40f;
+        }
+        .card h2 {
+            font-weight: 500;
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #1a3f60;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid #cbdae7;
+            padding-bottom: 10px;
+        }
+        .card label {
+            display: block;
+            margin: 12px 0 5px;
+            font-weight: 600;
+            color: #1f4a70;
+            font-size: 0.95rem;
+        }
+        .card input, .card select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #b4c9e0;
+            border-radius: 60px;
+            font-size: 1rem;
+            background: white;
+        }
+        .card input:focus, .card select:focus {
+            border-color: #f39c12;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(243,156,18,0.15);
+        }
+        button {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin: 18px 0 10px;
+            transition: 0.15s;
+            border: 1px solid #e08e0b;
+        }
+        button:hover {
+            background: #e67e22;
+            transform: scale(1.01);
+        }
+        .result {
+            background: #e1effb;
+            border-radius: 24px;
+            padding: 16px;
+            margin-top: 15px;
+            border-left: 5px solid #f39c12;
+        }
+        .result p {
+            margin: 8px 0;
+            font-weight: 500;
+        }
+        .result .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #003057;
+            line-height: 1.2;
+        }
+        .note {
+            background: #f0f6fd;
+            border-radius: 18px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: #2b4f6e;
+            margin-top: 18px;
+            border: 1px dashed #99bada;
+        }
+        hr {
+            border: none;
+            border-top: 3px dotted #bfd6ec;
+            margin: 40px 0 20px;
+        }
+        .highlight {
+            background: #fef9e7;
+            border: 2px solid #f1c40f;
+        }
+        .footer {
+            text-align: center;
+            color: #6f8da6;
+            font-size: 0.9rem;
+            margin-top: 30px;
+        }
+        .flexRow {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ---------- REPORT STYLES ---------- */
+        .report-container {
+            max-width: 1300px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .report-card {
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,20,50,0.15);
+            padding: 35px;
+            border: 2px solid #f39c12;
+        }
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .report-header h2 {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #b85e00;
+            margin: 0;
+            border: none;
+        }
+        .report-badge {
+            background: #f39c12;
+            color: white;
+            padding: 8px 25px;
+            border-radius: 60px;
+            font-weight: 700;
+        }
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #f2f8ff;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        .report-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid #c9ddec;
+        }
+        .report-table tr:last-child td {
+            border-bottom: none;
+        }
+        .section-title {
+            background: #e7f0f9;
+            font-weight: 700;
+            color: #003153;
+        }
+        .report-note {
+            background: #fef9e7;
+            border-left: 6px solid #f1c40f;
+            padding: 15px 20px;
+            border-radius: 18px;
+            margin: 25px 0 15px;
+        }
+        .signature {
+            margin-top: 35px;
+            border-top: 2px dashed #bfd6ec;
+            padding-top: 20px;
+            font-style: italic;
+            color: #2b4f6e;
+            text-align: right;
+        }
+        .print-button {
+            background: #2e86c1;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            border: 1px solid #1b5e8a;
+        }
+        .print-button:hover {
+            background: #1b5e8a;
+        }
+        @media print {
+            .app, .print-button, .report-badge, .tabs { display: none; }
+            .report-card { box-shadow: none; border: 1px solid #ccc; }
+            body { background: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>⚙️ Oil Burner Wizard</h1>
+        <div class="sub">Power • flow • nozzle • efficiency • now also: <strong>kW from annual consumption & hours</strong></div>
+
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="metric">
+                <span class="flag">📏</span> Metric (liters)
+            </button>
+            <button class="tab-btn" data-tab="us">
+                <span class="flag">🇺🇸</span> US Gallon
+            </button>
+        </div>
+
+        <!-- ========== TAB 1: METRIC (LITERS) ========== -->
+        <div class="tab-content active" id="tab-metric">
+            <!-- Oil selector -->
+            <div style="background: #e2effb; border-radius: 60px; padding: 12px 25px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <span style="font-weight: 600; color: #14471f;">🧪 Oil type</span>
+                <select id="oilGlobalMetric" style="padding: 10px 25px; border-radius: 40px; border: 1px solid #b0c0d0;">
+                    <option value="EL" selected>Light fuel oil EL (unheated) — 11.8 kWh/kg · 0.84 kg/l</option>
+                    <option value="S">Heavy fuel oil S (preheated) — 11.2 kWh/kg · 0.96 kg/l</option>
+                </select>
+            </div>
+
+            <!-- Card 0: Metric -->
+            <div style="margin-bottom: 25px;">
+                <div class="card highlight" style="background: #fef5e7;">
+                    <h2>📆 0. Burner power from annual consumption (Metric)</h2>
+                    <div class="flexRow" style="flex-wrap: wrap;">
+                        <div style="flex:1; min-width:170px;">
+                            <label>⏲️ Operating hours per year (h)</label>
+                            <input type="number" id="m_yearHours" value="1400" step="10">
+                        </div>
+                        <div style="flex:1; min-width:170px;">
+                            <label>🛢️ Annual consumption (liter)</label>
+                            <input type="number" id="m_yearLiter" value="5000" step="100">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="m_calcPowerBtn">Calculate power (kW)</button>
+                        <button id="m_calcLiterBtn" style="background: #2c3e50; border-color:#1f2e3d;">← reverse</button>
+                    </div>
+                    <div class="result">
+                        <p>🔥 Burner thermal power <span class="value" id="m_burnerPowerKw">35.4</span> kW</p>
+                        <p>⛽ Average flow: <span id="m_avgFlowLh">3.57</span> l/h | <span id="m_avgFlowKgh">3.00</span> kg/h</p>
+                        <p style="font-size:0.9rem;">(at η=100% burner power; actual boiler output = burner power × efficiency)</p>
+                    </div>
+                    <div class="note">
+                        <strong>Example:</strong> 1400 h/year, 5000 liters EL → avg. flow = 5000/1400 = 3.57 l/h.<br>
+                        With 11.8 kWh/kg, ρ=0.84 → 3.57 l/h = 3.00 kg/h → 3.00 × 11.8 = 35.4 kW burner.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid metric -->
+            <div class="grid">
+                <div class="card">
+                    <h2>1. Boiler power → flow</h2>
+                    <label>🔹 Q (kW)</label>
+                    <input type="number" id="m_qkW" step="0.1" value="34">
+                    <label>🔹 η (%)</label>
+                    <input type="number" id="m_etaPercent" step="0.1" value="90">
+                    <button id="m_calcFlowBtn">Calculate flow</button>
+                    <div class="result">
+                        <p>⛽ <span class="value" id="m_flowKg">3.20</span> kg/h</p>
+                        <p>⛽ <span class="value" id="m_flowL">3.80</span> l/h</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>2. Nozzle size (US-gph)</h2>
+                    <label>🔹 Flow (l/h)</label>
+                    <input type="number" id="m_flowLforNozzle" step="0.01" value="3.8">
+                    <label>🔹 Pressure p (bar)</label>
+                    <input type="number" id="m_pressureBar" step="0.1" value="12.5">
+                    <label>🔹 Ref. pressure (bar)</label>
+                    <input type="number" id="m_refPressure" step="0.1" value="7.0">
+                    <button id="m_calcNozzleBtn">Calculate nozzle</button>
+                    <div class="result">
+                        <p>🧩 <span class="value" id="m_nozzleSize">0.75</span> US-gph</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>3. Measuring time</h2>
+                    <label>🔹 Flow (l/h)</label>
+                    <input type="number" id="m_flowForTime" step="0.1" value="20">
+                    <label>🔹 Volume (liter)</label>
+                    <input type="number" id="m_volumeLiter" step="0.1" value="2.0">
+                    <button id="m_calcTimeBtn">Calculate minutes</button>
+                    <div class="result">
+                        <p>⏳ <span class="value" id="m_timeResult">6.0</span> min</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>4. Flue gas η</h2>
+                    <label>🔹 measurement</label>
+                    <select id="m_co2orO2">
+                        <option value="co2" selected>CO₂ %</option>
+                        <option value="o2">O₂ %</option>
+                    </select>
+                    <input type="number" id="m_gasValue" step="0.1" value="13.5">
+                    <label>🔹 Flue gas °C</label>
+                    <input type="number" id="m_flueTemp" value="190">
+                    <label>🔹 Intake air °C</label>
+                    <input type="number" id="m_airTemp" value="20">
+                    <button id="m_calcEfficiencyBtn">Calculate η</button>
+                    <div class="result">
+                        <p>📈 <span class="value" id="m_efficiencyResult">92.5</span> %</p>
+                        <p>loss <span id="m_lossResult">7.5</span>%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suction line metric -->
+            <hr>
+            <h2 style="margin-left: 5px;">📏 Suction line indication (EL)</h2>
+            <div style="display: flex; gap: 30px; background: #ecf5fd; border-radius: 30px; padding: 20px; flex-wrap: wrap;">
+                <div style="min-width:250px;">
+                    <label>Length (m)</label><input type="number" id="m_suctionLength" value="10" step="0.5">
+                    <label>Height difference (m)</label><input type="number" id="m_heightDiff" value="2" step="0.5">
+                    <label>Flow (l/h)</label><input type="number" id="m_flowForPipe" value="20">
+                    <button id="m_calcPipeBtn" style="background:#3f6b9c;">Advise diameter</button>
+                </div>
+                <div class="result" style="flex:1;">
+                    <p>Min. diameter <span class="value" id="m_minDiameter">10</span> mm</p>
+                    <p>Advised <span class="value" id="m_advisedDiameter">12</span> mm</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                💡 Burner power from annual consumption: flow (l/h) = annual consumption (l) / hours → kg/h = l/h * ρ → power (kW) = kg/h * calorific value (kWh/kg).<br>
+                Oil type EL: 11.8 kWh/kg, 0.84 kg/l | S: 11.2 kWh/kg, 0.96 kg/l.
+            </div>
+        </div>
+
+        <!-- ========== TAB 2: US GALLON ========== -->
+        <div class="tab-content" id="tab-us">
+            <!-- Oil selector -->
+            <div style="background: #e2effb; border-radius: 60px; padding: 12px 25px; margin-bottom: 30px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <span style="font-weight: 600; color: #14471f;">🧪 Oil type</span>
+                <select id="oilGlobalUS" style="padding: 10px 25px; border-radius: 40px; border: 1px solid #b0c0d0;">
+                    <option value="EL" selected>Light fuel oil EL — 11.8 kWh/kg · 0.84 kg/L · ≈ 31.6 kWh/US gal</option>
+                    <option value="S">Heavy fuel oil S — 11.2 kWh/kg · 0.96 kg/L · ≈ 40.6 kWh/US gal</option>
+                </select>
+            </div>
+
+            <!-- Card 0: US Gallon -->
+            <div style="margin-bottom: 25px;">
+                <div class="card highlight" style="background: #fef5e7;">
+                    <h2>📆 0. Burner power from annual consumption (US Gallon)</h2>
+                    <div class="flexRow" style="flex-wrap: wrap;">
+                        <div style="flex:1; min-width:170px;">
+                            <label>⏲️ Operating hours per year (h)</label>
+                            <input type="number" id="us_yearHours" value="1400" step="10">
+                        </div>
+                        <div style="flex:1; min-width:170px;">
+                            <label>🇺🇸 Annual consumption (US gallon)</label>
+                            <input type="number" id="us_yearGallon" value="1323" step="10">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="us_calcPowerBtn">Calculate power (kW)</button>
+                        <button id="us_calcGalBtn" style="background: #2c3e50; border-color:#1f2e3d;">← reverse</button>
+                    </div>
+                    <div class="result">
+                        <p>🔥 Burner thermal power <span class="value" id="us_burnerPowerKw">35.4</span> kW</p>
+                        <p>⛽ Average flow: <span id="us_avgFlowGph">0.94</span> US gal/h | <span id="us_avgFlowLbh">6.61</span> lb/h</p>
+                        <p style="font-size:0.9rem;">(at η=100% burner power; actual boiler output = burner power × efficiency)</p>
+                    </div>
+                    <div class="note">
+                        <strong>Example:</strong> 1400 h/year, 1323 US gal EL → avg. flow = 1323/1400 = 0.94 US gal/h.<br>
+                        With 11.8 kWh/kg, ρ=0.84 kg/L → 0.94 gal/h × 3.78 L/gal = 3.57 L/h = 3.00 kg/h → 3.00 × 11.8 = 35.4 kW burner.<br>
+                        <strong>1 US gallon = 3.78 liters · 1 kg = 2.2046 lb</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid US -->
+            <div class="grid">
+                <div class="card">
+                    <h2>1. Boiler power → flow (US)</h2>
+                    <label>🔹 Q (kW)</label>
+                    <input type="number" id="us_qkW" step="0.1" value="34">
+                    <label>🔹 η (%)</label>
+                    <input type="number" id="us_etaPercent" step="0.1" value="90">
+                    <button id="us_calcFlowBtn">Calculate flow</button>
+                    <div class="result">
+                        <p>⛽ <span class="value" id="us_flowLb">7.05</span> lb/h</p>
+                        <p>⛽ <span class="value" id="us_flowGal">1.00</span> US gal/h</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>2. Nozzle size (US-gph)</h2>
+                    <label>🔹 Flow (US gal/h)</label>
+                    <input type="number" id="us_flowGalNozzle" step="0.01" value="1.00">
+                    <label>🔹 Pressure p (bar)</label>
+                    <input type="number" id="us_pressureBar" step="0.1" value="12.5">
+                    <label>🔹 Ref. pressure (bar)</label>
+                    <input type="number" id="us_refPressure" step="0.1" value="7.0">
+                    <button id="us_calcNozzleBtn">Calculate nozzle</button>
+                    <div class="result">
+                        <p>🧩 <span class="value" id="us_nozzleSize">0.75</span> US-gph</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>3. Measuring time (US)</h2>
+                    <label>🔹 Flow (US gal/h)</label>
+                    <input type="number" id="us_flowForTime" step="0.1" value="5.29">
+                    <label>🔹 Volume (US gallon)</label>
+                    <input type="number" id="us_volumeGal" step="0.1" value="0.53">
+                    <button id="us_calcTimeBtn">Calculate minutes</button>
+                    <div class="result">
+                        <p>⏳ <span class="value" id="us_timeResult">6.0</span> min</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>4. Flue gas η</h2>
+                    <label>🔹 measurement</label>
+                    <select id="us_co2orO2">
+                        <option value="co2" selected>CO₂ %</option>
+                        <option value="o2">O₂ %</option>
+                    </select>
+                    <input type="number" id="us_gasValue" step="0.1" value="13.5">
+                    <label>🔹 Flue gas °C</label>
+                    <input type="number" id="us_flueTemp" value="190">
+                    <label>🔹 Intake air °C</label>
+                    <input type="number" id="us_airTemp" value="20">
+                    <button id="us_calcEfficiencyBtn">Calculate η</button>
+                    <div class="result">
+                        <p>📈 <span class="value" id="us_efficiencyResult">92.5</span> %</p>
+                        <p>loss <span id="us_lossResult">7.5</span>%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suction line US -->
+            <hr>
+            <h2 style="margin-left: 5px;">📏 Suction line indication (US)</h2>
+            <div style="display: flex; gap: 30px; background: #ecf5fd; border-radius: 30px; padding: 20px; flex-wrap: wrap;">
+                <div style="min-width:250px;">
+                    <label>Length (ft)</label><input type="number" id="us_suctionLengthFt" value="33" step="1">
+                    <label>Height difference (ft)</label><input type="number" id="us_heightDiffFt" value="6.5" step="0.5">
+                    <label>Flow (US gal/h)</label><input type="number" id="us_flowForPipe" value="5.29">
+                    <button id="us_calcPipeBtn" style="background:#3f6b9c;">Advise diameter</button>
+                </div>
+                <div class="result" style="flex:1;">
+                    <p>Min. diameter <span class="value" id="us_minDiameterIn">0.39</span> in</p>
+                    <p>Advised <span class="value" id="us_advisedDiameterIn">0.47</span> in</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                💡 Burner power from annual consumption (US): flow (gal/h) = annual consumption (gal) / hours → lb/h = gal/h × 3.78 × ρ × 2.2046 → power (kW) = lb/h × 0.4536 × calorific value.<br>
+                EL: 11.8 kWh/kg · 0.84 kg/L · ≈ 31.6 kWh/US gal | S: 11.2 kWh/kg · 0.96 kg/L · ≈ 40.6 kWh/US gal
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORT SECTION (blijft hetzelfde, toont altijd metric) -->
+    <div class="report-container">
+        <div class="report-card" id="reportPreview">
+            <div class="report-header">
+                <h2>📋 Oil Burner Installation Report</h2>
+                <span class="report-badge">PDF preview</span>
+            </div>
+
+            <div class="report-grid">
+                <div>
+                    <table class="report-table">
+                        <tr class="section-title"><td colspan="2">🔥 Burner power from annual consumption</td></tr>
+                        <tr><td>Operating hours / year</td><td><b id="r_yearHours">1400</b> h</td></tr>
+                        <tr><td>Annual consumption (L)</td><td><b id="r_yearLiter">5000</b> liter</td></tr>
+                        <tr><td>Annual consumption (US gal)</td><td><b id="r_yearGallon">1323</b> US gal</td></tr>
+                        <tr><td>Oil type</td><td><b id="r_oilType">Light fuel oil EL</b></td></tr>
+                        <tr><td>Average flow (metric)</td><td><b id="r_avgLh">3.57</b> l/h | <b id="r_avgKgh">3.00</b> kg/h</td></tr>
+                        <tr><td>Average flow (US)</td><td><b id="r_avgGph">0.94</b> US gal/h | <b id="r_avgLbh">6.61</b> lb/h</td></tr>
+                        <tr><td>Burner thermal power (100% η)</td><td><b id="r_burnerPower">35.4</b> kW</td></tr>
+                        <tr class="section-title"><td colspan="2">⚙️ Boiler & nozzle</td></tr>
+                        <tr><td>Boiler power Q</td><td><b id="r_qkW">34.0</b> kW</td></tr>
+                        <tr><td>Efficiency η</td><td><b id="r_etaPercent">90.0</b> %</td></tr>
+                        <tr><td>Resulting flow</td><td><b id="r_flowKg">3.20</b> kg/h | <b id="r_flowL">3.80</b> l/h</td></tr>
+                        <tr><td>Nozzle flow (input)</td><td><b id="r_nozzleFlow">3.80</b> l/h</td></tr>
+                        <tr><td>Pressure / ref pressure</td><td><b id="r_pres">12.5</b> bar / <b id="r_ref">7.0</b> bar</td></tr>
+                        <tr><td>Nozzle size (US-gph)</td><td><b id="r_nozzleSize">0.75</b> gph</td></tr>
+                    </table>
+                </div>
+                <div>
+                    <table class="report-table">
+                        <tr class="section-title"><td colspan="2">⏱️ Measuring & flue gas</td></tr>
+                        <tr><td>Flow for time test</td><td><b id="r_flowTime">20.0</b> l/h</td></tr>
+                        <tr><td>Volume collected</td><td><b id="r_vol">2.0</b> liter</td></tr>
+                        <tr><td>Measuring time</td><td><b id="r_timeMin">6.0</b> min</td></tr>
+                        <tr><td>CO₂ / O₂</td><td><b id="r_gasType">CO₂</b> <b id="r_gasVal">13.5</b> %</td></tr>
+                        <tr><td>Flue gas temp</td><td><b id="r_flue">190</b> °C</td></tr>
+                        <tr><td>Intake air temp</td><td><b id="r_air">20</b> °C</td></tr>
+                        <tr><td>Delta T</td><td><b id="r_deltaT">170</b> K</td></tr>
+                        <tr><td>Calculated efficiency η</td><td><b id="r_etaFlue">92.5</b> %</td></tr>
+                        <tr><td>Flue gas loss</td><td><b id="r_loss">7.5</b> %</td></tr>
+                        <tr class="section-title"><td colspan="2">📏 Suction line (EL)</td></tr>
+                        <tr><td>Length / height diff</td><td><b id="r_len">10</b> m / <b id="r_height">2</b> m</td></tr>
+                        <tr><td>Min. diameter</td><td><b id="r_minD">10</b> mm</td></tr>
+                        <tr><td>Advised diameter</td><td><b id="r_advD">12</b> mm</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="report-note" id="r_summary">
+                <strong>📌 Calculation summary:</strong> Burner power from annual consumption = (liters/year / hours) * density * calorific value. Nozzle size (US-gph) = flow(l/h) / (3.78 * √(p/pref)). Flue gas efficiency uses Siegert formula.
+            </div>
+            <div class="signature">
+                Report generated · Oil Burner Wizard · values based on current inputs
+            </div>
+            <button class="print-button" id="printReportBtn">🖨️ Print / save as PDF</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const L_PER_GAL = 3.78;
+            const KG_PER_LB = 0.45359237;
+            const M_PER_FT = 0.3048;
+
+            // ========== TAB SWITCHING ==========
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                });
+            });
+
+            // ========== METRIC TAB ==========
+            const metricOil = document.getElementById('oilGlobalMetric');
+            let m_hv = 11.8, m_rho = 0.84;
+
+            function m_updateOil() {
+                if (metricOil.value === 'EL') { m_hv = 11.8; m_rho = 0.84; }
+                else { m_hv = 11.2; m_rho = 0.96; }
+                m_calcAll();
+            }
+            metricOil.addEventListener('change', m_updateOil);
+
+            // Power from year (metric)
+            const m_yearHours = document.getElementById('m_yearHours');
+            const m_yearLiter = document.getElementById('m_yearLiter');
+            const m_burnerPowerKw = document.getElementById('m_burnerPowerKw');
+            const m_avgFlowLh = document.getElementById('m_avgFlowLh');
+            const m_avgFlowKgh = document.getElementById('m_avgFlowKgh');
+
+            function m_calcPowerFromYear() {
+                const hours = parseFloat(m_yearHours.value) || 0;
+                const liters = parseFloat(m_yearLiter.value) || 0;
+                if (hours <= 0 || liters <= 0) return;
+                const avgLh = liters / hours;
+                const avgKgh = avgLh * m_rho;
+                const power = avgKgh * m_hv;
+                m_burnerPowerKw.innerText = power.toFixed(1);
+                m_avgFlowLh.innerText = avgLh.toFixed(2);
+                m_avgFlowKgh.innerText = avgKgh.toFixed(2);
+            }
+            document.getElementById('m_calcPowerBtn').addEventListener('click', () => { m_calcPowerFromYear(); updateReport(); });
+            document.getElementById('m_calcLiterBtn').addEventListener('click', () => {
+                const hours = parseFloat(m_yearHours.value) || 0;
+                if (hours <= 0) return;
+                const targetKw = parseFloat(prompt("Desired burner power (kW):", "35")) || 35;
+                if (targetKw <= 0) return;
+                const kgPerH = targetKw / m_hv;
+                const lPerH = kgPerH / m_rho;
+                m_yearLiter.value = Math.round(lPerH * hours);
+                m_calcPowerFromYear();
+                updateReport();
+            });
+
+            // Flow from power (metric)
+            const m_qkW = document.getElementById('m_qkW');
+            const m_etaPercent = document.getElementById('m_etaPercent');
+            const m_flowKg = document.getElementById('m_flowKg');
+            const m_flowL = document.getElementById('m_flowL');
+
+            function m_calcFlow() {
+                const Q = parseFloat(m_qkW.value) || 0;
+                const eta = (parseFloat(m_etaPercent.value) || 100) / 100;
+                if (eta <= 0) return;
+                const inputPower = Q / eta;
+                const kg = inputPower / m_hv;
+                const l = kg / m_rho;
+                m_flowKg.innerText = kg.toFixed(2);
+                m_flowL.innerText = l.toFixed(2);
+            }
+            document.getElementById('m_calcFlowBtn').addEventListener('click', () => { m_calcFlow(); updateReport(); });
+
+            // Nozzle (metric input l/h, US-gph output)
+            const m_flowLnozzle = document.getElementById('m_flowLforNozzle');
+            const m_pressureBar = document.getElementById('m_pressureBar');
+            const m_refPressure = document.getElementById('m_refPressure');
+            const m_nozzleSize = document.getElementById('m_nozzleSize');
+
+            function m_calcNozzle() {
+                const Ql = parseFloat(m_flowLnozzle.value) || 0;
+                const p = parseFloat(m_pressureBar.value) || 1;
+                const pref = parseFloat(m_refPressure.value) || 7;
+                if (p <= 0 || pref <= 0) return;
+                const gph = Ql / (3.78 * Math.sqrt(p / pref));
+                m_nozzleSize.innerText = gph.toFixed(2);
+            }
+            document.getElementById('m_calcNozzleBtn').addEventListener('click', () => { m_calcNozzle(); updateReport(); });
+
+            // Measuring time (metric)
+            const m_flowForTime = document.getElementById('m_flowForTime');
+            const m_volumeLiter = document.getElementById('m_volumeLiter');
+            const m_timeResult = document.getElementById('m_timeResult');
+
+            function m_calcTime() {
+                const flow = parseFloat(m_flowForTime.value) || 0;
+                const vol = parseFloat(m_volumeLiter.value) || 0;
+                if (flow <= 0) return;
+                m_timeResult.innerText = (vol / flow * 60).toFixed(1);
+            }
+            document.getElementById('m_calcTimeBtn').addEventListener('click', () => { m_calcTime(); updateReport(); });
+
+            // Flue gas (metric)
+            const m_co2orO2 = document.getElementById('m_co2orO2');
+            const m_gasValue = document.getElementById('m_gasValue');
+            const m_flueTemp = document.getElementById('m_flueTemp');
+            const m_airTemp = document.getElementById('m_airTemp');
+            const m_efficiencyResult = document.getElementById('m_efficiencyResult');
+            const m_lossResult = document.getElementById('m_lossResult');
+
+            function m_calcEfficiency() {
+                let gas = parseFloat(m_gasValue.value) || 0;
+                const tf = parseFloat(m_flueTemp.value) || 0;
+                const ta = parseFloat(m_airTemp.value) || 0;
+                const deltaT = tf - ta;
+                if (deltaT <= 0) return;
+                let co2;
+                if (m_co2orO2.value === 'co2') co2 = gas;
+                else co2 = (20.9 - gas) * 15.5 / 20.9;
+                if (co2 <= 0) return;
+                const loss = deltaT * (0.5 / co2 + 0.007);
+                m_efficiencyResult.innerText = (100 - loss).toFixed(1);
+                m_lossResult.innerText = loss.toFixed(1);
+            }
+            document.getElementById('m_calcEfficiencyBtn').addEventListener('click', () => { m_calcEfficiency(); updateReport(); });
+
+            // Suction line (metric)
+            const m_suctionLength = document.getElementById('m_suctionLength');
+            const m_heightDiff = document.getElementById('m_heightDiff');
+            const m_flowForPipe = document.getElementById('m_flowForPipe');
+            const m_minDiameter = document.getElementById('m_minDiameter');
+            const m_advisedDiameter = document.getElementById('m_advisedDiameter');
+
+            function m_calcPipe() {
+                const L = parseFloat(m_suctionLength.value) || 0;
+                const H = parseFloat(m_heightDiff.value) || 0;
+                let minD = 8 + (L / 5) + (H / 2);
+                minD = Math.ceil(minD);
+                if (minD < 6) minD = 6;
+                let adv = minD + 2;
+                const Q = parseFloat(m_flowForPipe.value) || 0;
+                if (Q > 30) adv += 2;
+                m_minDiameter.innerText = minD;
+                m_advisedDiameter.innerText = adv;
+            }
+            document.getElementById('m_calcPipeBtn').addEventListener('click', () => { m_calcPipe(); updateReport(); });
+
+            function m_calcAll() {
+                m_calcPowerFromYear();
+                m_calcFlow();
+                m_calcNozzle();
+                m_calcTime();
+                m_calcEfficiency();
+                m_calcPipe();
+                updateReport();
+            }
+
+            // ========== US GALLON TAB ==========
+            const usOil = document.getElementById('oilGlobalUS');
+            let us_hv = 11.8, us_rho = 0.84;
+
+            function us_updateOil() {
+                if (usOil.value === 'EL') { us_hv = 11.8; us_rho = 0.84; }
+                else { us_hv = 11.2; us_rho = 0.96; }
+                us_calcAll();
+            }
+            usOil.addEventListener('change', us_updateOil);
+
+            // Power from year (US)
+            const us_yearHours = document.getElementById('us_yearHours');
+            const us_yearGallon = document.getElementById('us_yearGallon');
+            const us_burnerPowerKw = document.getElementById('us_burnerPowerKw');
+            const us_avgFlowGph = document.getElementById('us_avgFlowGph');
+            const us_avgFlowLbh = document.getElementById('us_avgFlowLbh');
+
+            function us_calcPowerFromYear() {
+                const hours = parseFloat(us_yearHours.value) || 0;
+                const gallons = parseFloat(us_yearGallon.value) || 0;
+                if (hours <= 0 || gallons <= 0) return;
+                const avgGalh = gallons / hours;                        // US gal/h
+                const avgLh = avgGalh * L_PER_GAL;                      // L/h
+                const avgKgh = avgLh * us_rho;                          // kg/h
+                const avgLbh = avgKgh / KG_PER_LB;                      // lb/h
+                const power = avgKgh * us_hv;                           // kW
+                us_burnerPowerKw.innerText = power.toFixed(1);
+                us_avgFlowGph.innerText = avgGalh.toFixed(2);
+                us_avgFlowLbh.innerText = avgLbh.toFixed(2);
+            }
+            document.getElementById('us_calcPowerBtn').addEventListener('click', () => { us_calcPowerFromYear(); updateReport(); });
+            document.getElementById('us_calcGalBtn').addEventListener('click', () => {
+                const hours = parseFloat(us_yearHours.value) || 0;
+                if (hours <= 0) return;
+                const targetKw = parseFloat(prompt("Desired burner power (kW):", "35")) || 35;
+                if (targetKw <= 0) return;
+                const kgPerH = targetKw / us_hv;
+                const lPerH = kgPerH / us_rho;
+                const galPerH = lPerH / L_PER_GAL;
+                us_yearGallon.value = Math.round(galPerH * hours);
+                us_calcPowerFromYear();
+                updateReport();
+            });
+
+            // Flow from power (US)
+            const us_qkW = document.getElementById('us_qkW');
+            const us_etaPercent = document.getElementById('us_etaPercent');
+            const us_flowLb = document.getElementById('us_flowLb');
+            const us_flowGal = document.getElementById('us_flowGal');
+
+            function us_calcFlow() {
+                const Q = parseFloat(us_qkW.value) || 0;
+                const eta = (parseFloat(us_etaPercent.value) || 100) / 100;
+                if (eta <= 0) return;
+                const inputPower = Q / eta;
+                const kg = inputPower / us_hv;
+                const lb = kg / KG_PER_LB;
+                const gal = (kg / us_rho) / L_PER_GAL;
+                us_flowLb.innerText = lb.toFixed(2);
+                us_flowGal.innerText = gal.toFixed(2);
+            }
+            document.getElementById('us_calcFlowBtn').addEventListener('click', () => { us_calcFlow(); updateReport(); });
+
+            // Nozzle (US input gal/h)
+            const us_flowGalNozzle = document.getElementById('us_flowGalNozzle');
+            const us_pressureBar = document.getElementById('us_pressureBar');
+            const us_refPressure = document.getElementById('us_refPressure');
+            const us_nozzleSize = document.getElementById('us_nozzleSize');
+
+            function us_calcNozzle() {
+                const Qgal = parseFloat(us_flowGalNozzle.value) || 0;
+                const p = parseFloat(us_pressureBar.value) || 1;
+                const pref = parseFloat(us_refPressure.value) || 7;
+                if (p <= 0 || pref <= 0) return;
+                const gph = Qgal / Math.sqrt(p / pref);
+                us_nozzleSize.innerText = gph.toFixed(2);
+            }
+            document.getElementById('us_calcNozzleBtn').addEventListener('click', () => { us_calcNozzle(); updateReport(); });
+
+            // Measuring time (US)
+            const us_flowForTime = document.getElementById('us_flowForTime');
+            const us_volumeGal = document.getElementById('us_volumeGal');
+            const us_timeResult = document.getElementById('us_timeResult');
+
+            function us_calcTime() {
+                const flow = parseFloat(us_flowForTime.value) || 0;
+                const vol = parseFloat(us_volumeGal.value) || 0;
+                if (flow <= 0) return;
+                us_timeResult.innerText = (vol / flow * 60).toFixed(1);
+            }
+            document.getElementById('us_calcTimeBtn').addEventListener('click', () => { us_calcTime(); updateReport(); });
+
+            // Flue gas (US)
+            const us_co2orO2 = document.getElementById('us_co2orO2');
+            const us_gasValue = document.getElementById('us_gasValue');
+            const us_flueTemp = document.getElementById('us_flueTemp');
+            const us_airTemp = document.getElementById('us_airTemp');
+            const us_efficiencyResult = document.getElementById('us_efficiencyResult');
+            const us_lossResult = document.getElementById('us_lossResult');
+
+            function us_calcEfficiency() {
+                let gas = parseFloat(us_gasValue.value) || 0;
+                const tf = parseFloat(us_flueTemp.value) || 0;
+                const ta = parseFloat(us_airTemp.value) || 0;
+                const deltaT = tf - ta;
+                if (deltaT <= 0) return;
+                let co2;
+                if (us_co2orO2.value === 'co2') co2 = gas;
+                else co2 = (20.9 - gas) * 15.5 / 20.9;
+                if (co2 <= 0) return;
+                const loss = deltaT * (0.5 / co2 + 0.007);
+                us_efficiencyResult.innerText = (100 - loss).toFixed(1);
+                us_lossResult.innerText = loss.toFixed(1);
+            }
+            document.getElementById('us_calcEfficiencyBtn').addEventListener('click', () => { us_calcEfficiency(); updateReport(); });
+
+            // Suction line (US, input ft, output inches)
+            const us_suctionLengthFt = document.getElementById('us_suctionLengthFt');
+            const us_heightDiffFt = document.getElementById('us_heightDiffFt');
+            const us_flowForPipe = document.getElementById('us_flowForPipe');
+            const us_minDiameterIn = document.getElementById('us_minDiameterIn');
+            const us_advisedDiameterIn = document.getElementById('us_advisedDiameterIn');
+
+            function us_calcPipe() {
+                const Lft = parseFloat(us_suctionLengthFt.value) || 0;
+                const Hft = parseFloat(us_heightDiffFt.value) || 0;
+                const Lm = Lft * M_PER_FT;
+                const Hm = Hft * M_PER_FT;
+                let minDmm = 8 + (Lm / 5) + (Hm / 2);
+                minDmm = Math.ceil(minDmm);
+                if (minDmm < 6) minDmm = 6;
+                let advmm = minDmm + 2;
+                const Qgal = parseFloat(us_flowForPipe.value) || 0;
+                const Qlh = Qgal * L_PER_GAL;
+                if (Qlh > 30) advmm += 2;
+                us_minDiameterIn.innerText = (minDmm / 25.4).toFixed(2);
+                us_advisedDiameterIn.innerText = (advmm / 25.4).toFixed(2);
+            }
+            document.getElementById('us_calcPipeBtn').addEventListener('click', () => { us_calcPipe(); updateReport(); });
+
+            function us_calcAll() {
+                us_calcPowerFromYear();
+                us_calcFlow();
+                us_calcNozzle();
+                us_calcTime();
+                us_calcEfficiency();
+                us_calcPipe();
+                updateReport();
+            }
+
+            // ========== REPORT (altijd metric + US conversie) ==========
+            function updateReport() {
+                // Gebruik metric waarden als basis
+                document.getElementById('r_oilType').innerText = metricOil.value === 'EL' ? 'Light fuel oil EL' : 'Heavy fuel oil S';
+                document.getElementById('r_yearHours').innerText = m_yearHours.value;
+                document.getElementById('r_yearLiter').innerText = m_yearLiter.value;
+                document.getElementById('r_yearGallon').innerText = Math.round((parseFloat(m_yearLiter.value) || 0) / L_PER_GAL);
+                document.getElementById('r_avgLh').innerText = m_avgFlowLh.innerText;
+                document.getElementById('r_avgKgh').innerText = m_avgFlowKgh.innerText;
+                const avgLh = parseFloat(m_avgFlowLh.innerText) || 0;
+                const avgKgh = parseFloat(m_avgFlowKgh.innerText) || 0;
+                document.getElementById('r_avgGph').innerText = (avgLh / L_PER_GAL).toFixed(2);
+                document.getElementById('r_avgLbh').innerText = (avgKgh / KG_PER_LB).toFixed(2);
+                document.getElementById('r_burnerPower').innerText = m_burnerPowerKw.innerText;
+                document.getElementById('r_qkW').innerText = m_qkW.value;
+                document.getElementById('r_etaPercent').innerText = m_etaPercent.value;
+                document.getElementById('r_flowKg').innerText = m_flowKg.innerText;
+                document.getElementById('r_flowL').innerText = m_flowL.innerText;
+                document.getElementById('r_nozzleFlow').innerText = m_flowLnozzle.value;
+                document.getElementById('r_pres').innerText = m_pressureBar.value;
+                document.getElementById('r_ref').innerText = m_refPressure.value;
+                document.getElementById('r_nozzleSize').innerText = m_nozzleSize.innerText;
+                document.getElementById('r_flowTime').innerText = m_flowForTime.value;
+                document.getElementById('r_vol').innerText = m_volumeLiter.value;
+                document.getElementById('r_timeMin').innerText = m_timeResult.innerText;
+                document.getElementById('r_gasType').innerText = m_co2orO2.value === 'co2' ? 'CO₂' : 'O₂';
+                document.getElementById('r_gasVal').innerText = m_gasValue.value;
+                document.getElementById('r_flue').innerText = m_flueTemp.value;
+                document.getElementById('r_air').innerText = m_airTemp.value;
+                document.getElementById('r_deltaT').innerText = (parseFloat(m_flueTemp.value)||0) - (parseFloat(m_airTemp.value)||0);
+                document.getElementById('r_etaFlue').innerText = m_efficiencyResult.innerText;
+                document.getElementById('r_loss').innerText = m_lossResult.innerText;
+                document.getElementById('r_len').innerText = m_suctionLength.value;
+                document.getElementById('r_height').innerText = m_heightDiff.value;
+                document.getElementById('r_minD').innerText = m_minDiameter.innerText;
+                document.getElementById('r_advD').innerText = m_advisedDiameter.innerText;
+
+                const summary = `Metric: ${m_avgFlowLh.innerText} l/h × ${m_rho.toFixed(2)} kg/l = ${m_avgFlowKgh.innerText} kg/h × ${m_hv.toFixed(1)} kWh/kg = ${m_burnerPowerKw.innerText} kW. ` +
+                    `US: ${(avgLh/L_PER_GAL).toFixed(2)} US gal/h = ${(avgKgh/KG_PER_LB).toFixed(2)} lb/h. ` +
+                    `Nozzle ${m_nozzleSize.innerText} US-gph at ${m_pressureBar.value} bar (ref ${m_refPressure.value} bar). ` +
+                    `Flue gas efficiency ${m_efficiencyResult.innerText}%.`;
+                document.getElementById('r_summary').innerHTML = '<strong>📌 Calculation summary:</strong> ' + summary;
+            }
+
+            document.getElementById('printReportBtn').addEventListener('click', () => window.print());
+
+            // ========== INIT ==========
+            function fullRefresh() {
+                m_calcAll();
+                us_calcAll();
+                updateReport();
+            }
+            m_updateOil();
+            us_updateOil();
+        })();
+    </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(reg => console.log('SW:', reg.scope))
+        .catch(err => console.error('SW error:', err));
+    });
+  }
+</script>
+</body>
+</html>
